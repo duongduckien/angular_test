@@ -1,0 +1,84 @@
+
+<div class="row text-center">
+  <div class="col-md-4">
+    <div class="btn-group">
+      <div
+        class="btn btn-primary"
+        mwlCalendarPreviousView
+        [view]="view"
+        [(viewDate)]="viewDate">
+        Previous
+      </div>
+      <div
+        class="btn btn-primary"
+        mwlCalendarNextView
+        [view]="view"
+        [(viewDate)]="viewDate">
+        Next
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):locale }}</h3>
+  </div>
+</div>
+<br>
+
+<div class="row">
+  <div class="col-md-9">
+    <mwl-calendar-week-view
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventTimesChanged)="eventDropped($event)">
+    </mwl-calendar-week-view>
+  </div>  
+</div>
+
+<form #f="ngForm" (ngSubmit)="submitTimeSheet(f)">
+  <select name="project" (change)="changeProject($event.target)" [(ngModel)]="project_data">
+    <option *ngFor="let project of projects; let i = index" [attr.value]="project.id" [attr.selected]="i == 0 ? true : null">
+      {{ project.name }}
+    </option>
+  </select>
+
+  <select name="task" (change)="changeTask($event.target)" [(ngModel)]="task_data">
+    <option *ngFor="let task of tasks; let i = index" [attr.value]="task.id" [attr.selected]="i == 0 ? true : null">
+      {{ task.name }}
+    </option>
+  </select>
+
+  <div class="row">
+    <label>Time</label>
+    <input type="text" name="time" [(ngModel)]="time">
+  </div>
+
+  <div class="row">
+    <label>Comment</label>
+    <textarea name="" id="" cols="30" rows="10" name="comment" [(ngModel)]="comment"></textarea>
+  </div>
+
+  <input type="submit">
+</form>
+
+<div class="row">
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body">
+        <ul>
+          <li
+            *ngFor="let event of externalEvents"
+            mwlDraggable
+            [dropData]="{event: event}"
+            style="position:relative; z-index: 10">
+            <a
+              href="javascript:;"
+              [style.color]="event.color.primary">
+              {{ event.title }}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
