@@ -76,6 +76,7 @@ export class HomeComponent implements OnInit {
     });
 
     this.minTime = this.configService.get('minTimeShowReason');
+    this.currentDate = new Date();
   }
 
   ngOnInit() {
