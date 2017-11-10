@@ -57,7 +57,7 @@ export class HomeComponent implements OnInit {
     private ngRedux: NgRedux<any>,
     public datepipe: DatePipe
   ){
-    
+  
   }
 
   ngOnInit() {

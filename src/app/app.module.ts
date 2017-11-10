@@ -19,6 +19,7 @@ import { AppRoutingModule } from './app.routing';
 // Services
 import { ApiService } from './services/api.service';
 import { HelperService } from './services/helper.service';
+import { ConfigService } from './services/config.service';
 
 // Pages
 import { HomeComponent } from './pages/home/home.component';
@@ -43,6 +44,7 @@ import { HomeComponent } from './pages/home/home.component';
   providers: [
     ApiService,
     HelperService,
+    ConfigService,
     DatePipe
   ],
   bootstrap: [AppComponent]
