@@ -106,7 +106,6 @@ export class HomeComponent implements OnInit {
 
     this.helperService.getAllDataFromStore()
       .then(data => {
-        console.log('Du lieu la:');
         console.log(data);
       });
 
@@ -191,8 +190,6 @@ export class HomeComponent implements OnInit {
 
     if (this.key_code == 17 || this.key_name == 'Control') {
       // this.helperService.updateData(event);
-      
-      
     }
     
     // if (externalIndex > -1) {
