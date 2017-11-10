@@ -23,8 +23,8 @@ export class HomeComponent implements OnInit {
 
   @select('timesheet') timesheet;
 
-  keyName: any;
-  keyCode: any;
+  keyName: string;
+  keyCode: number;
 
   projects: any;
   tasks: any;
