@@ -52,20 +52,20 @@
   <form #f="ngForm" (ngSubmit)="submitTimeSheet(f)" class="form-default">
       <div class="form-group">
           <label>Project</label>
-          <input type="text" name="project" [(ngModel)]="project_name" (click)="onProjectName()" class="form-control" required>
+          <input type="text" name="project" [(ngModel)]="projectName" (click)="onProjectName()" class="form-control" required>
           <div class="list-project" *ngIf="isShowListProject">
             <ul>
-              <li *ngFor="let project of projects | searchProjectByName: project_name" (click)="chooseProject(project)">{{ project.name }}</li>
+              <li *ngFor="let project of projects | searchProjectByName: projectName" (click)="chooseProject(project)">{{ project.name }}</li>
             </ul>
           </div>
       </div>
 
       <div class="form-group">
           <label>Task</label>
-          <input type="task" name="task" [(ngModel)]="task_name" (click)="onTaskName()" class="form-control" required>
+          <input type="task" name="task" [(ngModel)]="taskName" (click)="onTaskName()" class="form-control" required>
           <div class="list-project" *ngIf="isShowListTask">
             <ul>
-              <li *ngFor="let task of tasks | searchProjectByName: task_name" (click)="chooseTask(task)">{{ task.name }}</li>
+              <li *ngFor="let task of tasks | searchProjectByName: taskName" (click)="chooseTask(task)">{{ task.name }}</li>
             </ul>
           </div>
       </div>
@@ -86,7 +86,7 @@
 
       <div class="form-group" *ngIf="time > minTime">
         <label>Write off Reason</label>
-        <select name="reason" (change)="changeTask($event.target)" [(ngModel)]="reason_data" class="form-control">
+        <select name="reason" (change)="changeTask($event.target)" [(ngModel)]="reasonData" class="form-control">
           <option *ngFor="let reason of reasons; let i = index" [value]="reason.name" [attr.selected]="i == 0 ? true : null">
             {{ reason.name }}
           </option>

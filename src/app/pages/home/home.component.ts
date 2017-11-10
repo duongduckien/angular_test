@@ -35,13 +35,13 @@ export class HomeComponent implements OnInit {
 
   projectId: any;
 
-  project_name: any;
-  task_name: any;
-  current_project_id: number;
-  current_task_id: number;
+  projectName: any;
+  taskName: any;
+  currentProjectId: number;
+  currentTaskId: number;
   isShowListProject = false;
   isShowListTask = false;
-  reason_data: any;
+  reasonData: any;
 
   clickedDate: Date;
 
@@ -116,18 +116,18 @@ export class HomeComponent implements OnInit {
 
   chooseProject(project) {
     this.isShowListProject = false;
-    this.task_name = '';
+    this.taskName = '';
     this.isShowListTask = true;
-    this.current_project_id = project.id;
+    this.currentProjectId = project.id;
     this.apiService.getTask(project.id).subscribe(data => {
       this.tasks = data;
     });
-    this.project_name = project.name;
+    this.projectName = project.name;
   }
 
   changeProject($event) {
-    this.task_name = null;
-    this.apiService.getTask(this.current_project_id).subscribe(data => {
+    this.taskName = null;
+    this.apiService.getTask(this.currentProjectId).subscribe(data => {
       this.tasks = data;
       this.time = 0;
       this.comment = '';
@@ -144,8 +144,8 @@ export class HomeComponent implements OnInit {
 
   chooseTask(task) {
     this.isShowListTask = false;
-    this.current_task_id = task.id;
-    this.task_name = task.name;
+    this.currentTaskId = task.id;
+    this.taskName = task.name;
   }
 
   clickDate(event) {
@@ -156,8 +156,8 @@ export class HomeComponent implements OnInit {
     event.cssClass = 'cal-day-selected';
     this.selectedDay = event;
 
-    this.project_name = null;
-    this.task_name = null;
+    this.projectName = null;
+    this.taskName = null;
     this.time = 0;
     this.comment = '';
     this.currentDate = event.date;
@@ -182,8 +182,8 @@ export class HomeComponent implements OnInit {
 
     let data_new = {
       id: Math.floor(1000 + Math.random() * 9000),
-      projectId: this.current_project_id,
-      taskId: this.current_task_id,
+      projectId: this.currentProjectId,
+      taskId: this.currentTaskId,
       project: f.value.project,
       task: f.value.task,
       comment: f.value.comment,
