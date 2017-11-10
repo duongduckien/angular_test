@@ -22,8 +22,8 @@ export class HomeComponent implements OnInit {
 
   @select('timesheet') timesheet;
 
-  key_name: any;
-  key_code: any;
+  keyName: any;
+  keyCode: any;
 
   projects: any;
   tasks: any;
@@ -47,8 +47,8 @@ export class HomeComponent implements OnInit {
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) { 
     // console.log(event);
-    this.key_name = event.key;
-    this.key_code = event.keyCode;
+    this.keyName = event.key;
+    this.keyCode = event.keyCode;
   }
 
   constructor(
@@ -57,7 +57,9 @@ export class HomeComponent implements OnInit {
     private ngRedux: NgRedux<any>,
     public datepipe: DatePipe
   ){
-  
+    this.getReason().then(data => {
+      this.reasons = data;
+    });
   }
 
   ngOnInit() {
@@ -73,11 +75,15 @@ export class HomeComponent implements OnInit {
         this.projects = data;
       });
 
-    this.apiService.getReason()
-      .subscribe(data => {
-        this.reasons = data;
-      });
+  }
 
+  getReason(): Promise<any> {
+    return new Promise(resolve => {
+      this.apiService.getReason()
+        .subscribe(data => {
+          resolve(data);
+        });
+    });
   }
 
   getAllProject(): Promise<any> {
@@ -85,6 +91,8 @@ export class HomeComponent implements OnInit {
       this.apiService.getProject()
         .subscribe(data => {
           resolve(data);
+        }, err => {
+          resolve(err);
         });
     })
   }
@@ -96,6 +104,8 @@ export class HomeComponent implements OnInit {
         this.tasks = data;
         this.time = 0;
         this.comment = '';
+      },err => {
+        console.log(err);
       });
   }
 
@@ -188,6 +198,8 @@ export class HomeComponent implements OnInit {
               }
             });
 
+          }, err => {
+            console.log(err);
           });
       }
     });
@@ -211,16 +223,12 @@ export class HomeComponent implements OnInit {
   }: CalendarEventTimesChangedEvent): void {
     const externalIndex: number = this.externalEvents.indexOf(event);
 
-    console.log(this.key_code);
-    console.log(this.key_name);
-    console.log(event);
-
     this.helperService.getAllDataFromStore()
       .then(data => {
         console.log(data);
       });
 
-    if (this.key_code == 17 || this.key_name == 'Control') {
+    if (this.keyCode == 17 || this.keyName == 'Control') {
       // this.helperService.updateData(event);
     }
 
@@ -235,8 +243,8 @@ export class HomeComponent implements OnInit {
     }
     // this.viewDate = newStart;
     this.activeDayIsOpen = true;
-    this.key_code = null;
-    this.key_name = null;
+    this.keyCode = null;
+    this.keyName = null;
     
   }
 
