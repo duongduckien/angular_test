@@ -35,41 +35,4 @@ export class ApiService {
       .map(res => res.json());
   }
 
-
-
-
-
-
-
-
-
-
-
-  // // Directories
-
-  // getDirectories() {
-    
-  //       return this.http.get(this.apiBase + '/directories')
-  //         .map(res => res.json());
-    
-  //     }
-    
-  //     // Categories
-    
-  //     getCategories(params: any) {    
-    
-  //       if (params.dir_id) {
-    
-  //         return this.http.get(this.apiBase + '/directories/' + params.dir_id + '/categories')
-  //           .map(res => res.json());
-    
-  //       } else {
-    
-  //         return this.http.get(this.apiBase + '/categories/' + params.cat_id)
-  //           .map(res => res.json());
-    
-  //       }
-    
-  //     }
-
 }

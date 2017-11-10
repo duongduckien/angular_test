@@ -1,84 +1,130 @@
 
-<div class="row text-center">
-  <div class="col-md-4">
-    <div class="btn-group">
-      <div
-        class="btn btn-primary"
+<div class="container">
+  <div class="row text-center">
+    <div class="col-md-4">
+      <div class="btn-group">
+        
+      </div>
+    </div>
+    <div class="col-md-12">
+      <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):locale }}</h3>
+    </div>
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-sm-2 text-right">
+        <div
+        class="btn btn-default calander-control-btn"
         mwlCalendarPreviousView
         [view]="view"
         [(viewDate)]="viewDate">
-        Previous
+        <<
       </div>
-      <div
-        class="btn btn-primary"
+    </div>
+    <div class="col-md-8">
+      <mwl-calendar-week-view
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        (eventTimesChanged)="eventDropped($event)"
+        (dayHeaderClicked)="clickedDate = clickDate($event.day.date)">
+      </mwl-calendar-week-view>
+    </div> 
+    <div class="col-sm-2">
+        <div
+        class="btn btn-default calander-control-btn"
         mwlCalendarNextView
         [view]="view"
         [(viewDate)]="viewDate">
-        Next
+        >>
+      </div>
+    </div> 
+  </div>
+  
+  <div class="col-md-8 col-md-offset-2">
+  <form #f="ngForm" (ngSubmit)="submitTimeSheet(f)" class="form-default">
+      <div class="form-group">
+          <label>Project</label>
+          <select name="project" (change)="changeProject($event.target)" [(ngModel)]="project_data" class="form-control" required>
+              <option *ngFor="let project of projects; let i = index" [value]="project.id" [attr.selected]="i == 0 ? true : null">
+                {{ project.name }}
+              </option>
+            </select>
+      </div>
+
+      <div class="form-group">
+          <label>Task</label>
+          <select name="task" (change)="changeTask($event.target)" [(ngModel)]="task_data" class="form-control" required>
+              <option *ngFor="let task of tasks; let i = index" [value]="task.id" [attr.selected]="i == 0 ? true : null">
+                {{ task.name }}
+              </option>
+            </select>
+      </div>
+      <div class="row">
+        <div class="col-xs-2">
+            <div class="form-group">
+                <label>Time</label>
+                <input type="number" step="0.01" name="time" [(ngModel)]="time" class="form-control input-time" required>
+            </div>
+        </div>
+        <div class="col-xs-10">
+            <div class="form-group">
+                <label>Comment</label>
+                <textarea name="" id="" cols="30" rows="3" name="comment" [(ngModel)]="comment" class="form-control"></textarea>
+              </div>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="time > 3">
+        <label>Write off Reason</label>
+        <select name="reason" (change)="changeTask($event.target)" [(ngModel)]="reason_data" class="form-control">
+          <option *ngFor="let reason of reasons; let i = index" [value]="reason.name" [attr.selected]="i == 0 ? true : null">
+            {{ reason.name }}
+          </option>
+        </select>
+      </div>
+    
+      <div class="form-group">
+        <button type="submit" class="btn-block btn btn-success" [disabled]="!f.valid">Enter</button>
+      </div>
+    </form>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="card">
+        <div class="card-body">
+          <ul class="list-unstyled list-event">
+            <li
+              *ngFor="let event of externalEvents"
+              mwlDraggable
+              [dropData]="{event: event}"
+              style="position:relative; z-index: 10">
+              <div class="row"
+                href="javascript:;"
+                [style.color]="event.color.primary">
+                <div class="col-xs-1">
+                  ::
+                </div>
+                <div class="col-xs-2">
+                   {{ event.time }}
+                </div>
+                <div class="col-xs-3">
+                    <div>{{ event.project }}</div>
+                    <div>{{ event.task }}</div>
+                </div>
+                <div class="col-xs-6">
+                    <div>{{ event.comment }}</div>
+                    <div>{{ event.start }}</div>
+                </div>
+                
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-4">
-    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):locale }}</h3>
-  </div>
-</div>
-<br>
 
-<div class="row">
-  <div class="col-md-9">
-    <mwl-calendar-week-view
-      [viewDate]="viewDate"
-      [events]="events"
-      [refresh]="refresh"
-      (eventTimesChanged)="eventDropped($event)">
-    </mwl-calendar-week-view>
-  </div>  
-</div>
-
-<form #f="ngForm" (ngSubmit)="submitTimeSheet(f)">
-  <select name="project" (change)="changeProject($event.target)" [(ngModel)]="project_data">
-    <option *ngFor="let project of projects; let i = index" [attr.value]="project.id" [attr.selected]="i == 0 ? true : null">
-      {{ project.name }}
-    </option>
-  </select>
-
-  <select name="task" (change)="changeTask($event.target)" [(ngModel)]="task_data">
-    <option *ngFor="let task of tasks; let i = index" [attr.value]="task.id" [attr.selected]="i == 0 ? true : null">
-      {{ task.name }}
-    </option>
-  </select>
-
-  <div class="row">
-    <label>Time</label>
-    <input type="text" name="time" [(ngModel)]="time">
-  </div>
-
-  <div class="row">
-    <label>Comment</label>
-    <textarea name="" id="" cols="30" rows="10" name="comment" [(ngModel)]="comment"></textarea>
-  </div>
-
-  <input type="submit">
-</form>
-
-<div class="row">
-  <div class="col-md-3">
-    <div class="card">
-      <div class="card-body">
-        <ul>
-          <li
-            *ngFor="let event of externalEvents"
-            mwlDraggable
-            [dropData]="{event: event}"
-            style="position:relative; z-index: 10">
-            <a
-              href="javascript:;"
-              [style.color]="event.color.primary">
-              {{ event.title }}
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
 </div>

@@ -6,6 +6,9 @@ import { DragAndDropModule } from 'angular-draggable-droppable';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
+import { NgRedux, NgReduxModule } from 'ng2-redux';
+import { rootReducer, INITIAL_STATE } from './store';
+import { DatePipe } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
 import { NgbDatepickerModule, NgbTimepickerModule } from '@ng-bootstrap/ng-bootstrap';
@@ -20,14 +23,10 @@ import { HelperService } from './services/helper.service';
 // Pages
 import { HomeComponent } from './pages/home/home.component';
 
-// Components
-import { CalendarComponent } from './components/calendar/calendar.component';
-
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    CalendarComponent
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -38,12 +37,18 @@ import { CalendarComponent } from './components/calendar/calendar.component';
     NgbTimepickerModule.forRoot(),
     DragAndDropModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    NgReduxModule
   ],
   providers: [
     ApiService,
-    HelperService
+    HelperService,
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(ngRedux: NgRedux<any>) {
+    ngRedux.configureStore(rootReducer, INITIAL_STATE);
+  }
+}

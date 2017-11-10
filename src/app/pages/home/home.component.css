@@ -1,0 +1,40 @@
+.form-default{
+    padding-top: 20px;
+}
+
+.calander-control-btn{
+    margin-top: 9px;
+}
+
+.calander-control-btn:hover{
+color: #337ab7;
+font-weight: bold;
+}
+.list-event{
+    padding: 15px 10px;
+}
+
+.list-event >li{
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #c6c6c6;
+    border-radius: 4px;
+}
+
+.input-time{
+    height: 74px;
+    font-size: 2em;
+    padding-right: 5px;
+}
+
+.cal-events-row {
+    display: none;
+}
+
+.cal-event {
+    display: none;
+}
+
+input.ng-invalid {
+    border: 1px solid red;
+}
