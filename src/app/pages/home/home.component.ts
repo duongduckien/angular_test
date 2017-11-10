@@ -7,13 +7,13 @@ import { colors } from '../../common/colors';
 import { ApiService } from '../../services/api.service';
 import { HelperService } from '../../services/helper.service';
 import { DatePipe } from '@angular/common';
-import { WeekDay } from 'calendar-utils';
 
 import { NgRedux, select } from 'ng2-redux';
 import { SUBMIT_TIMESHEET } from '../../actions';
+import { log } from 'util';
 
 @Component({
-  selector: 'mwl-demo-component',
+  selector: 'app-mwl-demo-component',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -34,18 +34,26 @@ export class HomeComponent implements OnInit {
 
   projectId: any;
 
-  project_data: any;
+  project_name: any;
+  task_name: any;
+  current_project_id: number;
+  isShowListProject = false;
+  isShowListTask = false;
   task_data: any;
   reason_data: any;
 
   clickedDate: Date;
 
-  selected_date = null;
+  view = 'month';
+  viewDate: Date = new Date();
 
-  selectedDay: WeekDay;
+  externalEvents: CalendarEvent[] = [];
 
-  @HostListener('window:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) { 
+  events: CalendarEvent[] = [];
+  activeDayIsOpen = false;
+  refresh: Subject<any> = new Subject();
+
+  @HostListener('window:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
     // console.log(event);
     this.key_name = event.key;
     this.key_code = event.keyCode;
@@ -56,86 +64,81 @@ export class HomeComponent implements OnInit {
     public helperService: HelperService,
     private ngRedux: NgRedux<any>,
     public datepipe: DatePipe
-  ){
-  
+  ) {
+
   }
 
   ngOnInit() {
-  
     this.helperService.getAllDataFromStore()
       .then(data => {
-        console.log(data);
         this.externalEvents = data;
       });
 
-    this.getAllProject()
-      .then(data => {
-        this.projects = data;
-      });
+    this.getAllProject().then(data => {
+      console.log(data);
+      this.projects = data;
+    });
 
-    this.apiService.getReason()
-      .subscribe(data => {
-        this.reasons = data;
-      });
+    this.apiService.getReason().subscribe(data => {
+      this.reasons = data;
+    });
 
   }
 
   getAllProject(): Promise<any> {
     return new Promise(resolve => {
-      this.apiService.getProject()
-        .subscribe(data => {
-          resolve(data);
-        });
-    })
+      this.apiService.getProject().subscribe(data => {
+        resolve(data);
+      });
+    });
+
   }
 
-  changeProject(project) {
+  onProjectName() {
+    this.isShowListProject = true;
+  }
+
+  chooseProject(project) {
+    this.isShowListProject = false;
+    this.task_name = '';
+    this.isShowListTask = true;
+    this.apiService.getTask(project.id).subscribe(data => {
+      this.tasks = data;
+    });
+    this.project_name = project.name;
+  }
+
+  changeProject($event) {
     this.task_data = null;
-    this.apiService.getTask(project.value)
-      .subscribe(data => {
-        this.tasks = data;
-        this.time = 0;
-        this.comment = '';
-      });
+    this.apiService.getTask(this.current_project_id).subscribe(data => {
+      this.tasks = data;
+    });
   }
 
   changeTask(task) {
     console.log(task.value);
   }
 
+  onTaskName() {
+    this.isShowListTask = true;
+  }
+
+  chooseTask(task) {
+    this.isShowListTask = false;
+    this.task_name = task.name;
+  }
+
   clickDate(event) {
-
-    if (this.selectedDay) {
-      delete this.selectedDay.cssClass;
-    }
-    event.cssClass = 'cal-day-selected';
-    this.selectedDay = event;
-
-    this.project_data = null;
-    this.task_data = null;
-    this.time = 0;
-    this.comment = '';
-    this.selected_date = event.date;
 
     this.helperService.getAllDataFromStore()
       .then(data => {
         console.log(data);
       });
 
-    this.helperService.getWhereDate(event.date)
+    this.helperService.getWhereDate(event)
       .then(data => {
         this.externalEvents = data;
       });
-    
-  }
-
-  beforeViewRender({header}: {header: WeekDay[]}): void {
-    header.forEach((day) => {
-      if (this.selectedDay && day.date.getTime() === this.selectedDay.date.getTime()) {
-        day.cssClass = 'cal-day-selected';
-        this.selectedDay = day;
-      }
-    });
   }
 
   submitTimeSheet(f: NgForm) {
@@ -150,13 +153,13 @@ export class HomeComponent implements OnInit {
     console.log(f.value.time);
 
     this.projects.forEach(item => {
-      if (item.id == parseInt(f.value.project)) {
+      if (item.id === parseInt(f.value.project)) {
 
         this.apiService.getTask(item.id)
           .subscribe(data => {
-            
+
             data.forEach(value => {
-              if (value.id == parseInt(f.value.task)) {
+              if (value.id === parseInt(f.value.task)) {
                 console.log(item);
                 console.log(value);
 
@@ -169,7 +172,7 @@ export class HomeComponent implements OnInit {
                   comment: f.value.comment,
                   time: f.value.time,
                   color: colors.blue,
-                  start: this.selected_date == null ? new Date() : this.selected_date,
+                  start: new Date(),
                   draggable: true
                 };
 
@@ -178,11 +181,6 @@ export class HomeComponent implements OnInit {
                     console.log(result);
                     result.push(data_new);
                     this.helperService.saveToStore(result);
-
-                    this.helperService.getWhereDate(this.selected_date)
-                      .then(data => {
-                        this.externalEvents = data;
-                      });
                   });
 
               }
@@ -191,19 +189,10 @@ export class HomeComponent implements OnInit {
           });
       }
     });
-    
-  
+
+
   }
 
-  view: string = 'week';
-  viewDate: Date = new Date();
-
-  externalEvents: CalendarEvent[] = [];
-  
-  events: CalendarEvent[] = [];
-  activeDayIsOpen: boolean = false;
-  refresh: Subject<any> = new Subject();
-  
   eventDropped({
     event,
     newStart,
@@ -215,14 +204,14 @@ export class HomeComponent implements OnInit {
     console.log(this.key_name);
     console.log(event);
 
-    this.helperService.getAllDataFromStore()
-      .then(data => {
-        console.log(data);
-      });
-
-    if (this.key_code == 17 || this.key_name == 'Control') {
+    if (this.key_code === 17 || this.key_name === 'Control') {
       // this.helperService.updateData(event);
     }
+
+    // if (externalIndex > -1) {
+    //   this.externalEvents.splice(externalIndex, 1);
+    //   this.events.push(event);
+    // }
 
     this.helperService.getWhereDate(this.viewDate)
       .then(data => {
@@ -237,7 +226,6 @@ export class HomeComponent implements OnInit {
     this.activeDayIsOpen = true;
     this.key_code = null;
     this.key_name = null;
-    
-  }
 
+  }
 }

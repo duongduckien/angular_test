@@ -21,15 +21,6 @@ font-weight: bold;
     border-radius: 4px;
 }
 
-.cal-week-view .cal-day-headers .cal-header{
-    cursor: pointer;
-}
-
-.cal-week-view .cal-day-headers .cal-header.active{
-    background-color: #337ab7;
-    color: #fff;
-}
-
 .input-time{
     height: 74px;
     font-size: 2em;
@@ -48,22 +39,23 @@ input.ng-invalid {
     border: 1px solid red;
 }
 
-.top-fixed{
-    position: fixed;
-    top: 0;
-    width: 100%;
-    left: 0;
-    background: #ffffff;
-    z-index: 10;
-}
-.main-content{
-    padding-top: 140px;
-    position: relative;
-    z-index: 1;
+.list-project {
+    height: auto;
+    max-height: 150px;
+    overflow: auto;
+    padding: 10px;
+    margin: 0 0 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-.cal-day-selected,
-.cal-day-selected:hover {
-    background-color: #337ab7 !important;
-    color: #fff !important;
+.list-project ul {
+    padding: 0;
+    margin: 0;
+}
+
+.list-project ul li {
+    display: block;
+    padding: 5px 0;
+    cursor: pointer;
 }
