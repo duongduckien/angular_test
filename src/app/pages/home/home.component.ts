@@ -6,10 +6,9 @@ import { addDays, differenceInDays, startOfDay } from 'date-fns';
 import { colors } from '../../common/colors';
 import { ApiService } from '../../services/api.service';
 import { HelperService } from '../../services/helper.service';
+import { ConfigService } from '../../services/config.service';
 import { DatePipe } from '@angular/common';
 import { WeekDay } from 'calendar-utils';
-import * as constant from '../../common/config';
-
 import { NgRedux, select } from 'ng2-redux';
 import { SUBMIT_TIMESHEET } from '../../actions';
 import { log } from 'util';
@@ -68,6 +67,7 @@ export class HomeComponent implements OnInit {
   constructor(
     public apiService: ApiService,
     public helperService: HelperService,
+    public configService: ConfigService,
     private ngRedux: NgRedux<any>,
     public datepipe: DatePipe
   ){
@@ -75,7 +75,7 @@ export class HomeComponent implements OnInit {
       this.reasons = data;
     });
 
-    this.minTime = constant.minTime;
+    this.minTime = this.configService.get('minTimeShowReason');
   }
 
   ngOnInit() {
