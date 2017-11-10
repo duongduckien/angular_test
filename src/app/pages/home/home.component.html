@@ -1,46 +1,53 @@
 
-<div class="container">
-  <div class="row text-center">
-    <div class="col-md-4">
-      <div class="btn-group">
-        
-      </div>
-    </div>
-    <div class="col-md-12">
-      <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):locale }}</h3>
-    </div>
+<div class="top-fixed">
+  <div class="container">
+      <div class="row text-center">
+          <div class="col-md-4">
+            <div class="btn-group">
+              
+            </div>
+          </div>
+          <div class="col-md-12">
+            <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):locale }}</h3>
+          </div>
+        </div>
+        <br>
+      
+        <div class="row">
+          <div class="col-sm-2 text-right">
+              <div
+              class="btn btn-default calander-control-btn"
+              mwlCalendarPreviousView
+              [view]="view"
+              [(viewDate)]="viewDate">
+              <<
+            </div>
+          </div>
+          <div class="col-md-8">
+            <mwl-calendar-week-view
+              [viewDate]="viewDate"
+              [events]="events"
+              [refresh]="refresh"
+              (eventTimesChanged)="eventDropped($event)"
+              (dayHeaderClicked)="clickedDate = clickDate($event.day)"
+              (beforeViewRender)="beforeViewRender($event)">
+            </mwl-calendar-week-view>
+          </div> 
+          <div class="col-sm-2">
+              <div
+              class="btn btn-default calander-control-btn"
+              mwlCalendarNextView
+              [view]="view"
+              [(viewDate)]="viewDate">
+              >>
+            </div>
+          </div> 
+        </div>
   </div>
-  <br>
+</div>
 
-  <div class="row">
-    <div class="col-sm-2 text-right">
-        <div
-        class="btn btn-default calander-control-btn"
-        mwlCalendarPreviousView
-        [view]="view"
-        [(viewDate)]="viewDate">
-        <<
-      </div>
-    </div>
-    <div class="col-md-8">
-      <mwl-calendar-week-view
-        [viewDate]="viewDate"
-        [events]="events"
-        [refresh]="refresh"
-        (eventTimesChanged)="eventDropped($event)"
-        (dayHeaderClicked)="clickedDate = clickDate($event.day.date)">
-      </mwl-calendar-week-view>
-    </div> 
-    <div class="col-sm-2">
-        <div
-        class="btn btn-default calander-control-btn"
-        mwlCalendarNextView
-        [view]="view"
-        [(viewDate)]="viewDate">
-        >>
-      </div>
-    </div> 
-  </div>
+<div class="container main-content">
+  
   
   <div class="col-md-8 col-md-offset-2">
   <form #f="ngForm" (ngSubmit)="submitTimeSheet(f)" class="form-default">
@@ -95,7 +102,7 @@
     <div class="col-md-8 col-md-offset-2">
       <div class="card">
         <div class="card-body">
-          <ul class="list-unstyled list-event">
+          <ul class="list-unstyled list-event" ngModel>
             <li
               *ngFor="let event of externalEvents"
               mwlDraggable
@@ -116,7 +123,6 @@
                 </div>
                 <div class="col-xs-6">
                     <div>{{ event.comment }}</div>
-                    <div>{{ event.start }}</div>
                 </div>
                 
               </div>

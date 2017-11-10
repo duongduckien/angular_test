@@ -7,7 +7,7 @@ export interface IAppState {
 };
 
 export const INITIAL_STATE: IAppState = {
-    timesheet: []
+    timesheet: [],
 };
   
 export function rootReducer(state: IAppState, action): IAppState {
