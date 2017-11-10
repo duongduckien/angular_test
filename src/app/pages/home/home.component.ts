@@ -11,9 +11,10 @@ import { WeekDay } from 'calendar-utils';
 
 import { NgRedux, select } from 'ng2-redux';
 import { SUBMIT_TIMESHEET } from '../../actions';
+import { log } from 'util';
 
 @Component({
-  selector: 'mwl-demo-component',
+  selector: 'app-mwl-demo-component',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -34,18 +35,30 @@ export class HomeComponent implements OnInit {
 
   projectId: any;
 
-  project_data: any;
+  project_name: any;
+  task_name: any;
+  current_project_id: number;
+  current_task_id: number;
+  isShowListProject = false;
+  isShowListTask = false;
   task_data: any;
   reason_data: any;
 
   clickedDate: Date;
 
-  selected_date = null;
+  view = 'month';
+  viewDate: Date = new Date();
 
+  externalEvents: CalendarEvent[] = [];
+
+  events: CalendarEvent[] = [];
+  activeDayIsOpen = false;
+  refresh: Subject<any> = new Subject();
+
+  currentDate = null;
   selectedDay: WeekDay;
 
-  @HostListener('window:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) { 
+  @HostListener('window:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
     // console.log(event);
     this.keyName = event.key;
     this.keyCode = event.keyCode;
@@ -63,17 +76,15 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-  
     this.helperService.getAllDataFromStore()
       .then(data => {
-        console.log(data);
         this.externalEvents = data;
       });
 
-    this.getAllProject()
-      .then(data => {
-        this.projects = data;
-      });
+    this.getAllProject().then(data => {
+      console.log(data);
+      this.projects = data;
+    });
 
   }
 
@@ -88,29 +99,49 @@ export class HomeComponent implements OnInit {
 
   getAllProject(): Promise<any> {
     return new Promise(resolve => {
-      this.apiService.getProject()
-        .subscribe(data => {
-          resolve(data);
-        }, err => {
-          resolve(err);
-        });
-    })
+      this.apiService.getProject().subscribe(data => {
+        resolve(data);
+      });
+    });
+
   }
 
-  changeProject(project) {
+  onProjectName() {
+    this.isShowListProject = true;
+  }
+
+  chooseProject(project) {
+    this.isShowListProject = false;
+    this.task_name = '';
+    this.isShowListTask = true;
+    this.current_project_id = project.id;
+    this.apiService.getTask(project.id).subscribe(data => {
+      this.tasks = data;
+    });
+    this.project_name = project.name;
+  }
+
+  changeProject($event) {
     this.task_data = null;
-    this.apiService.getTask(project.value)
-      .subscribe(data => {
-        this.tasks = data;
-        this.time = 0;
-        this.comment = '';
-      },err => {
-        console.log(err);
-      });
+    this.apiService.getTask(this.current_project_id).subscribe(data => {
+      this.tasks = data;
+      this.time = 0;
+      this.comment = '';
+    });
   }
 
   changeTask(task) {
     console.log(task.value);
+  }
+
+  onTaskName() {
+    this.isShowListTask = true;
+  }
+
+  chooseTask(task) {
+    this.isShowListTask = false;
+    this.current_task_id = task.id;
+    this.task_name = task.name;
   }
 
   clickDate(event) {
@@ -121,11 +152,11 @@ export class HomeComponent implements OnInit {
     event.cssClass = 'cal-day-selected';
     this.selectedDay = event;
 
-    this.project_data = null;
-    this.task_data = null;
+    this.project_name = null;
+    this.task_name = null;
     this.time = 0;
     this.comment = '';
-    this.selected_date = event.date;
+    this.currentDate = event.date;
 
     this.helperService.getAllDataFromStore()
       .then(data => {
@@ -136,7 +167,40 @@ export class HomeComponent implements OnInit {
       .then(data => {
         this.externalEvents = data;
       });
-    
+  }
+
+  submitTimeSheet(f: NgForm) {
+
+    this.helperService.getAllDataFromStore()
+      .then(data => {
+        console.log(data);
+      });
+
+    let data_new = {
+      id: Math.floor(1000 + Math.random() * 9000),
+      projectId: this.current_project_id,
+      taskId: this.current_task_id,
+      project: f.value.project,
+      task: f.value.task,
+      comment: f.value.comment,
+      time: f.value.time,
+      color: colors.blue,
+      start: this.currentDate == null ? new Date() : this.currentDate,
+      draggable: true
+    };
+
+    this.helperService.getAllDataFromStore()
+      .then(result => {
+        console.log(result);
+        result.push(data_new);
+        this.helperService.saveToStore(result);
+
+        this.helperService.getWhereDate(this.currentDate)
+          .then(data => {
+            this.externalEvents = data;
+          });
+      });
+
   }
 
   beforeViewRender({header}: {header: WeekDay[]}): void {
@@ -148,74 +212,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  submitTimeSheet(f: NgForm) {
-
-    this.helperService.getAllDataFromStore()
-      .then(data => {
-        console.log(data);
-      });
-
-    console.log(f.value);
-
-    console.log(f.value.time);
-
-    this.projects.forEach(item => {
-      if (item.id == parseInt(f.value.project)) {
-
-        this.apiService.getTask(item.id)
-          .subscribe(data => {
-            
-            data.forEach(value => {
-              if (value.id == parseInt(f.value.task)) {
-                console.log(item);
-                console.log(value);
-
-                let data_new = {
-                  id: Math.floor(1000 + Math.random() * 9000),
-                  projectId: parseInt(f.value.project),
-                  taskId: parseInt(f.value.task),
-                  project: item.name,
-                  task: value.name,
-                  comment: f.value.comment,
-                  time: f.value.time,
-                  color: colors.blue,
-                  start: this.selected_date == null ? new Date() : this.selected_date,
-                  draggable: true
-                };
-
-                this.helperService.getAllDataFromStore()
-                  .then(result => {
-                    console.log(result);
-                    result.push(data_new);
-                    this.helperService.saveToStore(result);
-
-                    this.helperService.getWhereDate(this.selected_date)
-                      .then(data => {
-                        this.externalEvents = data;
-                      });
-                  });
-
-              }
-            });
-
-          }, err => {
-            console.log(err);
-          });
-      }
-    });
-    
-  
-  }
-
-  view: string = 'week';
-  viewDate: Date = new Date();
-
-  externalEvents: CalendarEvent[] = [];
-  
-  events: CalendarEvent[] = [];
-  activeDayIsOpen: boolean = false;
-  refresh: Subject<any> = new Subject();
-  
   eventDropped({
     event,
     newStart,
@@ -231,6 +227,11 @@ export class HomeComponent implements OnInit {
     if (this.keyCode == 17 || this.keyName == 'Control') {
       // this.helperService.updateData(event);
     }
+
+    // if (externalIndex > -1) {
+    //   this.externalEvents.splice(externalIndex, 1);
+    //   this.events.push(event);
+    // }
 
     this.helperService.getWhereDate(this.viewDate)
       .then(data => {

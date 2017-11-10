@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class SearchProjectByNamePipe implements PipeTransform {
 
   transform(arr: any, args: string): any {
-    if (arr) {
+    if (args) {
       const tmp_array = [];
       arr.forEach(val => {
         if (val.name.toLowerCase().indexOf(args.toLowerCase()) > -1) {
@@ -14,6 +14,8 @@ export class SearchProjectByNamePipe implements PipeTransform {
         }
       });
       return tmp_array;
+    } else {
+      return arr;
     }
   }
 

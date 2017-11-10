@@ -23,11 +23,13 @@ import { ConfigService } from './services/config.service';
 
 // Pages
 import { HomeComponent } from './pages/home/home.component';
+import { SearchProjectByNamePipe } from './pipes/search-project-by-name.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    SearchProjectByNamePipe
   ],
   imports: [
     BrowserModule,
@@ -44,8 +46,8 @@ import { HomeComponent } from './pages/home/home.component';
   providers: [
     ApiService,
     HelperService,
-    ConfigService,
-    DatePipe
+    DatePipe,
+    ConfigService
   ],
   bootstrap: [AppComponent]
 })
