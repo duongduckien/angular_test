@@ -12,6 +12,7 @@ export class ConfigService {
   
   }
 
+  // Load config from json file when start application
   load(): Promise<boolean> {
     
     return new Promise((resolve, reject) => {
@@ -28,6 +29,7 @@ export class ConfigService {
 
   }
 
+  // Get config where key of object
   get(setting) {
     return this.settings[setting];
   }

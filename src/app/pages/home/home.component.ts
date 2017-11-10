@@ -59,6 +59,7 @@ export class HomeComponent implements OnInit {
 
   minTime: number;
 
+  // Listen keyboard
   @HostListener('window:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
     this.keyName = event.key;
     this.keyCode = event.keyCode;
@@ -148,6 +149,7 @@ export class HomeComponent implements OnInit {
     this.taskName = task.name;
   }
 
+  // When click date on calendar
   clickDate(event) {
 
     if (this.selectedDay) {
@@ -173,6 +175,7 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  // When submit timesheet
   submitTimeSheet(f: NgForm) {
 
     this.helperService.getAllDataFromStore()
@@ -216,6 +219,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  // When dropped events
   eventDropped({
     event,
     newStart,
