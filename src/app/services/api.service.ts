@@ -17,7 +17,7 @@ export class ApiService {
     public http: Http,
     public configService: ConfigService
   ){
-    this.apiBase = constant.apiBase; 
+    this.apiBase = this.configService.get('apiBase');
   }
 
   // Project

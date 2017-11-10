@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarModule } from 'angular-calendar';
 import { DragAndDropModule } from 'angular-draggable-droppable';
@@ -47,7 +47,8 @@ import { SearchProjectByNamePipe } from './pipes/search-project-by-name.pipe';
     ApiService,
     HelperService,
     DatePipe,
-    ConfigService
+    ConfigService,
+    { provide: APP_INITIALIZER, useFactory: (config: ConfigService) => () => config.load(), deps: [ConfigService], multi: true }
   ],
   bootstrap: [AppComponent]
 })
