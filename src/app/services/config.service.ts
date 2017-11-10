@@ -9,7 +9,7 @@ export class ConfigService {
   constructor(
     public http: Http
   ){ 
-
+  
   }
 
   load(): Promise<boolean> {
@@ -18,6 +18,7 @@ export class ConfigService {
 
       this.http.get('assets/data/config.json')
         .map(res => res.json()).subscribe(data => {
+          this.settings = data;
           resolve(true);
       }, error => {
         reject(error);

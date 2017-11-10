@@ -8,6 +8,7 @@ import { ApiService } from '../../services/api.service';
 import { HelperService } from '../../services/helper.service';
 import { DatePipe } from '@angular/common';
 import { WeekDay } from 'calendar-utils';
+import * as constant from '../../common/config';
 
 import { NgRedux, select } from 'ng2-redux';
 import { SUBMIT_TIMESHEET } from '../../actions';
@@ -41,12 +42,11 @@ export class HomeComponent implements OnInit {
   current_task_id: number;
   isShowListProject = false;
   isShowListTask = false;
-  task_data: any;
   reason_data: any;
 
   clickedDate: Date;
 
-  view = 'month';
+  view = 'week';
   viewDate: Date = new Date();
 
   externalEvents: CalendarEvent[] = [];
@@ -58,8 +58,9 @@ export class HomeComponent implements OnInit {
   currentDate = null;
   selectedDay: WeekDay;
 
+  minTime: number;
+
   @HostListener('window:keydown', ['$event']) handleKeyboardEvent(event: KeyboardEvent) {
-    // console.log(event);
     this.keyName = event.key;
     this.keyCode = event.keyCode;
   }
@@ -73,6 +74,8 @@ export class HomeComponent implements OnInit {
     this.getReason().then(data => {
       this.reasons = data;
     });
+
+    this.minTime = constant.minTime;
   }
 
   ngOnInit() {
@@ -122,7 +125,7 @@ export class HomeComponent implements OnInit {
   }
 
   changeProject($event) {
-    this.task_data = null;
+    this.task_name = null;
     this.apiService.getTask(this.current_project_id).subscribe(data => {
       this.tasks = data;
       this.time = 0;
@@ -225,13 +228,12 @@ export class HomeComponent implements OnInit {
       });
 
     if (this.keyCode == 17 || this.keyName == 'Control') {
-      // this.helperService.updateData(event);
+      
     }
 
-    // if (externalIndex > -1) {
-    //   this.externalEvents.splice(externalIndex, 1);
-    //   this.events.push(event);
-    // }
+    if (this.currentDate !== null) {
+      this.viewDate = this.currentDate;
+    }
 
     this.helperService.getWhereDate(this.viewDate)
       .then(data => {
@@ -242,7 +244,7 @@ export class HomeComponent implements OnInit {
     if (newEnd) {
       event.end = newEnd;
     }
-    // this.viewDate = newStart;
+
     this.activeDayIsOpen = true;
     this.keyCode = null;
     this.keyName = null;
